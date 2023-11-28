@@ -1,0 +1,189 @@
+\documentclass[ngerman]{article}
+
+\usepackage{geometry}[top=1cm, bottom=1cm, left=1cm, right=1cm]
+\usepackage{babel}[ngerman]
+\usepackage{parskip}
+
+\usepackage{csquotes}
+\MakeOuterQuote{"}
+
+\usepackage{titling}
+\predate{}
+\postdate{}
+
+\usepackage{xcolor}
+\definecolor{light-gray}{gray}{0.95}
+
+\usepackage{listings}
+\usepackage{lstautogobble}
+\lstset{backgroundcolor=\color{light-gray}, basicstyle=\ttfamily, autogobble=true}
+
+\title{KarolLang Dokumentation}
+\author{Baumfinder}
+\date{}
+
+\begin{document}
+    \maketitle
+
+    Version: 1.1
+
+    \section{Einleitung}
+    Die KarolLang ist eine Sprache, die aus einer sehr dummen
+    Idee entstanden ist, nämlich zu beweisen, dass RobotKarol
+    turing-vollständig ist. Daraus entstand zunächt ein 
+    Branfuck-Interpreter und danach eine (simple) Simulation
+    einer theoretischen CPU in RobotKarol. Für die Instruktionen
+    dieser CPU wurde erst ein Assembler und schließlich diese
+    "high-level" Programmiersprache erstellt.
+
+    \section{Die Programmiersprache}
+    
+    \subsection{Datentypen}
+    Da in der CPU Daten in der Form von Zahlen gespeichert werden,
+    gibt es nur Zahlen in dieser Programmiersprache. Diese Zahlen
+    können auch negativ sein und Reichen von -999.999 bis 999999.
+    Adressen sind nur positiv.
+    
+    Zusätzlich können Booleans durch 0="falsch" und 1="wahr"
+    dargestellt werden. Alle anderen Zahlenwerte sind dann als
+    Boolean ungültig, werden in den meisten (der einzigen)
+    Implementation als "wahr" zugeordnet.
+
+    \subsection{Variablen und Arrays}
+    Variablen wird mit dem "var" Keyword erstellt. Arrays werden mit
+    dem "arr" Keyword erstellt.
+
+    Variablen kann mit einem "=" ein Wert zugewiesen werden, Arrays
+    ebenfalls.
+
+    Variablen und Arrays sind nur innerhalb ihres "Bereichs" aufrufbar,
+    also kann man z.B. von Außerhalb nich auf die Variablen, die
+    in einer Funktion definiert wurden, zugreifen.
+
+    Beispiel:
+    \begin{lstlisting}
+        var a
+        var b
+
+        a = 5
+        b = 69420
+
+        arr b[10]
+        b[3] = 666
+    \end{lstlisting}
+
+    Man kann mit dem Keyword "deref" anstatt einer Variablen dem
+    Wert an einer Adresse einen Wert zuweisen.
+
+    \subsection{Kommentare}
+    Einzeilige Kommentare werden mit "//" begonnen.
+
+    \subsection{Ausdrücke}
+    In der Programmiersprache werden folgende Operatoren
+    unterstützt:
+    \begin{description}
+        \item[a + b] addiert die beiden Zahlen
+        \item[a - b] subtrahiert die beiden Zahlen
+        \item[-a] negiert die Zahl
+        \item[a * b] multipliziert die beiden Zahlen; Punkt vor
+            Strich wird eingehalten
+        \item[addr a] ist die Adresse der Variablen a
+        \item[deref a] ist der Zahlenwert bei Adresse a
+    \end{description}
+
+    Außerdem gibt es Operatoren, die Zwei zahlen vergleichen. Die
+    Ausgabe dieser Ausdrücke ist entweder 0 oder 1, da es keine
+    Unterscheidung von Datentypen gibt. Deshalb kann man, im
+    Gegensatz zu den meistem anderen Programmiersprachen, mit diesen
+    dann als normale Zahlen weiterrechnen.
+    \begin{description}
+        \item[a == b] ist wahr, wenn a = b
+        \item[a != b] ist wahr, wenn nicht a = b
+        \item[a > b] ist wahr, wenn a > b
+        \item[a < b] ist wahr, wenn a < b
+    \end{description}
+
+    Beispiel:
+    \begin{lstlisting}
+        var a
+        var b
+        a = (5 - 3) * 7
+        // = 14
+        b = a == 13 + 1
+        // = 1, bzw. "wahr"
+    \end{lstlisting}
+
+    \subsection{Bedingte Anweisungen}
+    Bedingte Anweisungen werden nur ausgeführt, wenn eine Bedingung
+    wahr ist. Diese werden mit dem "if"-Keyword eingeleitet.
+
+    \begin{lstlisting}
+        // Syntax
+        if *Bedingung* {
+            *Anweisungen*
+        }
+    \end{lstlisting}
+    \begin{lstlisting}
+        // Beispiel
+        if a == 4 {
+            a = 14
+        }
+    \end{lstlisting}
+
+    \subsection{Schleifen}
+    Die while-Schleife wird mit dem Keyword "while" begonnen und
+    wiederholt Instruktionen so lange, bis eine Bedingung nicht
+    mehr wahr ist:
+    \begin{lstlisting}
+        // Syntax
+        while *Bedingung* {
+            *Instruktionen*
+        }
+    \end{lstlisting}
+    \begin{lstlisting}
+        // Beispiel
+        var a
+        a = 0
+        while a < 10 {
+            a = a + 1
+        }
+    \end{lstlisting}
+
+    \subsection{Funktionen}
+    Funktionen werden mit dem "func"-Keyword definiert, und mit ihrem
+    Namen aufgerufen. Eine Funktion kann entweder ein oder keine
+    Parameter entgegennehmen. Rekursion ist nicht erlaubt.
+    Funtkionen können nur in ausdrücken und nicht als 
+    eigenständige Anweisung aufgerufen werden.
+
+    Innerhalb einer Funktion kann mit der "return"-Anweisung ein
+    Wert zurückgegeben werden.
+
+    \begin{lstlisting}
+        // Syntax
+        func *Name* ( *Parameter(optional)* ) {
+            *Anweisungen*
+        }
+        
+        // Aufruf
+        var a
+        a = *Name* ( *Parameter(optional)* )
+    \end{lstlisting}
+    \begin{lstlisting}
+        // Beispiel
+        func addiereFünf(a) {
+            var b = a + 5
+            return b
+        }
+        var ergebnis
+        ergebnis = addiereFünf(45)
+        // ergebnis ist 50
+    \end{lstlisting}
+
+    \section{Ein- und Ausgabe}
+    In KarolLang gibt es keine explizite Ein- oder Ausgabe.
+    Die Eingaben eines Programms wird im Quellcode festgelegt, und
+    die Ausgaben können nach der Ausführung im Speicher der
+    CPU angesehen werden.
+
+\end{document}
